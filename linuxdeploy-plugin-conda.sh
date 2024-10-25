@@ -22,7 +22,7 @@ show_usage() {
     echo "  CONDA_PYTHON_VERSION=\"3.6\""
     echo "  PIP_REQUIREMENTS=\"packageA packageB -r requirements.txt -e git+https://...\""
     echo "  PIP_PREFIX=\"AppDir/usr/share/conda\""
-    echo "  ARCH=\"$ARCH\" (supported values: x86_64, i368, i686)"
+    echo "  ARCH=\"$ARCH\" (supported values: x86_64, arm64, aarch64)"
     echo "  CONDA_SKIP_CLEANUP=\"[all;][conda-pkgs;][__pycache__;][strip;][.a;][cmake;][doc;][man;][site-packages;]\""
 }
 
@@ -101,33 +101,33 @@ if [ -d "$APPDIR"/usr/conda ]; then
     log "Please make sure you perform a clean build before releases to make sure your process works properly."
 fi
 
-# install Miniconda, a self contained Python distribution, into AppDir
+# install Miniforge, a self contained Python distribution, into AppDir
 case "$ARCH" in
     "x86_64")
-        miniconda_installer_filename=Miniconda3-latest-Linux-x86_64.sh
+        miniforge_installer_filename=Miniforge3-latest-Linux-x86_64.sh
         ;;
-    "i386"|"i686")
-        miniconda_installer_filename=Miniconda3-latest-Linux-x86.sh
+    "arm64"|"aarch64")
+        miniforge_installer_filename=Miniforge3-latest-Linux-aarch64.sh
         ;;
     *)
-        log "ERROR: Unknown Miniconda arch: $ARCH"
+        log "ERROR: Unknown Miniforge arch: $ARCH"
         exit 1
         ;;
 esac
 
 pushd "$CONDA_DOWNLOAD_DIR"
-    miniconda_url=https://repo.anaconda.com/miniconda/"$miniconda_installer_filename"
+    miniforge_url=https://repo.anaconda.com/miniconda/"$miniforge_installer_filename"
     # let's make sure the file exists before we then rudimentarily ensure mutual exclusive access to it with flock
     # we set the timestamp to epoch 0; this should likely trigger a redownload for the first time
-    touch "$miniconda_installer_filename" -d '@0'
+    touch "$miniforge_installer_filename" -d '@0'
 
     # now, let's download the file
-    flock "$miniconda_installer_filename" wget -N -c "$miniconda_url"
+    flock "$miniforge_installer_filename" wget -N -c "$miniforge_url"
 popd
 
 # install into usr/conda/ instead of usr/ to make sure that the libraries shipped with conda don't overwrite or
 # interfere with libraries bundled by other plugins or linuxdeploy itself
-bash "$CONDA_DOWNLOAD_DIR"/"$miniconda_installer_filename" -b -p "$APPDIR"/usr/conda -f
+bash "$CONDA_DOWNLOAD_DIR"/"$miniforge_installer_filename" -b -p "$APPDIR"/usr/conda -f
 
 # we don't want to touch the system, therefore using a temporary home
 mkdir -p _temp_home
