@@ -134,9 +134,6 @@ mkdir -p _temp_home
 HOME=$(readlink -f _temp_home)
 export HOME
 
-# conda-forge is used by many conda packages, therefore we'll add that channel by default
-"$APPDIR"/usr/conda/bin/conda config --add channels conda-forge
-
 # force-install libxi, required by a majority of packages on some more annoying distributions like e.g., Arch
 #conda install -y xorg-libxi
 
