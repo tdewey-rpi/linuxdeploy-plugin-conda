@@ -131,7 +131,8 @@ bash "$CONDA_DOWNLOAD_DIR"/"$miniforge_installer_filename" -b -p "$APPDIR"/usr/c
 
 # we don't want to touch the system, therefore using a temporary home
 mkdir -p _temp_home
-export HOME=$(readlink -f _temp_home)
+HOME=$(readlink -f _temp_home)
+export HOME
 
 # conda-forge is used by many conda packages, therefore we'll add that channel by default
 "$APPDIR"/usr/conda/bin/conda config --add channels conda-forge
@@ -166,6 +167,7 @@ if [ "$PIP_REQUIREMENTS" != "" ]; then
         pushd "$PIP_WORKDIR"
     fi
 
+    # shellcheck disable=SC2086
     "$APPDIR"/usr/conda/bin/pip install -U $PIP_REQUIREMENTS ${PIP_PREFIX:+--prefix=$PIP_PREFIX} ${PIP_VERBOSE:+-v}
 
     if [ "$PIP_WORKDIR" != "" ]; then
